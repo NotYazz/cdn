@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+<body>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const filename = urlParams.get('file');
+
+            if (filename) {
+                downloadFile(filename);
+            }
+
+            function downloadFile(filename) {
+                const fileUrl = `https://your-cdn-url.com/files/${filename}`;
+                fetch(fileUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('File not found');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.getElementById('message').textContent = `Downloading ${filename}...`;
+                    })
+                    .catch(error => {
+                        document.getElementById('message').textContent = `Error: ${error.message}`;
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
